@@ -5,7 +5,7 @@
 
 Ссылка на репозиторий:
 
-1. [Mesto версия для сервера](https://github.com/Milliardan/express-mesto-gha.git)
+[Mesto версия для сервера](https://github.com/Milliardan/express-mesto-gha.git)
 
 ## Возможности
 - проверка токенов
