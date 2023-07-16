@@ -4,6 +4,7 @@ const NOT_FOUND = 404;
 const INTERNAL_SERVER_ERROR = 500;
 
 function handleError(err, req, res) {
+  console.error(err); 
   if (err.constructor.name === 'CastError') {
     res.status(BAD_REQUEST).send({
       message: 'Неверный формат переданных данных',

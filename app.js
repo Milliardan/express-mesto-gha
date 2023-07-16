@@ -7,6 +7,8 @@ const DATABASE_URL = 'mongodb://127.0.0.1:27017/mestodb';
 
 const app = express();
 
+app.use(express.json());
+
 mongoose
   .connect(DATABASE_URL)
   .then(() => {
