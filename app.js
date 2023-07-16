@@ -13,10 +13,11 @@ mongoose
     console.log(`Connected to database on ${DATABASE_URL}`);
   })
   .catch((err) => {
-    console.log('Error on database connection');
-    console.error(err);
+    console.error('Error on database connection');
+    console.error(err); // Заменим console.log() на console.error() для ошибок
   });
 
+// временное решение авторизации пользователя
 app.use((req, res, next) => {
   req.user = {
     _id: '64b3e17052f9c861c39b0fba',
