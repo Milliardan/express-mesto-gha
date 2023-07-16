@@ -1,72 +1,75 @@
-const { User } = require('../models/user');
-const { HTTP_CREATED, handleError } = require('../utils/constants');
+const User = require('../models/user');
 
-async function createUser(req, res) {
-  try {
-    const { name, about, avatar } = req.body;
-    const user = await User.create({ name, about, avatar });
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
 
-    res.status(HTTP_CREATED).send(user);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
+const getAllUsers = (req, res) => {
+  User.find({})
+    .then((users) => res.send(users))
+    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message }));
+};
 
-async function getAllUsers(req, res) {
-  try {
-    const users = await User.find({});
-    res.send(users);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
+const getUser = (req, res) => {
+  User.findById(req.params.userId)
+    .orFail(() => new Error('Not Found'))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+        return;
+      } if (err.message === 'Not Found') {
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        return;
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
+    });
+};
 
-async function getUser(req, res) {
-  try {
-    const { userId } = req.params;
-    const user = await User.findById(userId);
+const createUser = (req, res) => {
+  const { name, about, avatar } = req.body;
+  User.create({ name, about, avatar })
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      if (!name || !avatar || err.message) {
+        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
+      }
+    });
+};
 
-    if (!user) {
-      const error = new Error('Пользователь не найден');
-      error.name = 'NotFoundError';
-      throw error;
-    }
+const updateUser = (req, res) => {
+  const { name, about } = req.body;
+  const { _id } = req.user;
+  User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (!name || !about || err.message) {
+        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else if (!User[_id]) {
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
+      }
+    });
+};
 
-    res.send(user);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
-
-async function updateUser(req, res) {
-  try {
-    const userId = req.user._id;
-    const { name, about } = req.body;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { name, about },
-      { new: true, runValidators: true },
-    );
-    res.send(user);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
-
-async function updateAvatar(req, res) {
-  try {
-    const userId = req.user._id;
-    const { avatar } = req.body;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { avatar },
-      { new: true },
-    );
-    res.send(user);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  const { _id } = req.user;
+  User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (!User[_id]) {
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+      } else if (!avatar) {
+        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
+      }
+    });
+};
 
 module.exports = {
   createUser,

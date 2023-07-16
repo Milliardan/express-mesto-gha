@@ -1,4 +1,5 @@
 const users = require('express').Router();
+
 const {
   createUser,
   getAllUsers,

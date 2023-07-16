@@ -9,16 +9,6 @@ const app = express();
 
 app.use(express.json());
 
-mongoose
-  .connect(DATABASE_URL)
-  .then(() => {
-    console.log(`Connected to database on ${DATABASE_URL}`);
-  })
-  .catch((err) => {
-    console.error('Error on database connection');
-    console.error(err); // Заменим console.log() на console.error() для ошибок
-  });
-
 // временное решение авторизации пользователя
 app.use((req, res, next) => {
   req.user = {
@@ -27,6 +17,16 @@ app.use((req, res, next) => {
 
   next();
 });
+
+mongoose
+  .connect(DATABASE_URL)
+  .then(() => {
+    console.log(`Connected to database on ${DATABASE_URL}`);
+  })
+  .catch((err) => {
+    console.error('Error on database connection');
+    console.error(err);
+  });
 
 app.use(routes);
 

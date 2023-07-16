@@ -1,36 +1,11 @@
-const mongoose = require('mongoose');
-
 const HTTP_CREATED = 201;
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
 const INTERNAL_SERVER_ERROR = 500;
 
-function handleError(err, req, res) {
-  if (err instanceof mongoose.Error.CastError) {
-    res.status(BAD_REQUEST).send({
-      message: 'Неверный формат переданных данных',
-    });
-    return;
-  }
-
-  if (err instanceof mongoose.Error.ValidationError) {
-    res.status(BAD_REQUEST).send({
-      message: err.message,
-    });
-    return;
-  }
-
-  if (err instanceof mongoose.Error.DocumentNotFoundError) {
-    res.status(NOT_FOUND).send({
-      message: err.message,
-    });
-    return;
-  }
-
-  console.error(err);
-  res.status(INTERNAL_SERVER_ERROR).send({
-    message: 'Произошла ошибка на сервере',
-  });
-}
-
-module.exports = { HTTP_CREATED, handleError };
+module.exports = {
+  HTTP_CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+};
