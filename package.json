@@ -1,0 +1,22 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "Сервер для проекта Место",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Milliardan/express-mesto-gha.git"
+  },
+  "keywords": [
+    "\"yandex-practicum\""
+  ],
+  "author": "Денис Кежватов",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Milliardan/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/Milliardan/express-mesto-gha#readme"
+}
