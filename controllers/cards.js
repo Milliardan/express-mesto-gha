@@ -23,9 +23,14 @@ async function getAllCards(req, res) {
 
 async function getCard(req, res) {
   const { cardId } = req.params;
-  const card = await Card.findById(cardId);
-  res.send(card);
+  try {
+    const card = await Card.findById(cardId);
+    res.send(card);
+  } catch (err) {
+    handleError(err, req, res);
+  }
 }
+
 
 async function deleteCard(req, res) {
   try {
