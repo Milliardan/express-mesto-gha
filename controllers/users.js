@@ -1,13 +1,12 @@
 const { User } = require('../models/user');
-const { handleError } = require('../utils/constants');
+const { HTTP_CREATED, handleError } = require('../utils/constants');
 
 async function createUser(req, res) {
   try {
     const { name, about, avatar } = req.body;
     const user = await User.create({ name, about, avatar });
 
-    // Установить код ответа 201 (Created)
-    res.status(201).send(user);
+    res.status(HTTP_CREATED).send(user);
   } catch (err) {
     handleError(err, req, res);
   }
