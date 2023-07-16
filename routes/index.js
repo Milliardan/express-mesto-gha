@@ -1,5 +1,5 @@
 const express = require('express');
-const { handleError } = require('../utils/handleError');
+const { handleError } = require('../utils/constants');
 const { users } = require('./users');
 const { cards } = require('./cards');
 
