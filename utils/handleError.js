@@ -1,26 +1,24 @@
-const { Error } = require('mongoose');
-
 const HTTP_CREATED = 201;
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
 const INTERNAL_SERVER_ERROR = 500;
 
 function handleError(err, req, res) {
-  if (err instanceof Error.CastError) {
+  if (err.name === 'CastError') {
     res.status(BAD_REQUEST).send({
       message: 'Неверный формат переданных данных',
     });
     return;
   }
 
-  if (err instanceof Error.ValidationError) {
+  if (err.name === 'ValidationError') {
     res.status(BAD_REQUEST).send({
       message: err.message,
     });
     return;
   }
 
-  if (err instanceof Error.DocumentNotFoundError) {
+  if (err.name === 'NotFoundError') {
     res.status(NOT_FOUND).send({
       message: err.message,
     });
