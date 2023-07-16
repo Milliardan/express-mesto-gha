@@ -1,33 +1,28 @@
-const HTTP_CREATED = 201;
-const BAD_REQUEST = 400;
-const NOT_FOUND = 404;
-const INTERNAL_SERVER_ERROR = 500;
-
 function handleError(err, req, res) {
-  if (err.constructor.name === 'CastError') {
-    res.status(BAD_REQUEST).send({
+  if (err.name === 'CastError') {
+    res.status(400).send({
       message: 'Неверный формат переданных данных',
     });
     return;
   }
 
-  if (err.constructor.name === 'ValidationError') {
-    res.status(BAD_REQUEST).send({
+  if (err.name === 'ValidationError') {
+    res.status(400).send({
       message: err.message,
     });
     return;
   }
 
-  if (err.constructor.name === 'NotFoundError') {
-    res.status(NOT_FOUND).send({
+  if (err.name === 'NotFoundError') {
+    res.status(404).send({
       message: err.message,
     });
     return;
   }
 
-  res.status(INTERNAL_SERVER_ERROR).send({
+  res.status(500).send({
     message: 'Не получилось обработать запрос',
   });
 }
 
-module.exports = { HTTP_CREATED, handleError };
+module.exports = { handleError };
