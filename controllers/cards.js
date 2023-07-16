@@ -1,5 +1,5 @@
 const { Card } = require('../models/card');
-const { handleError } = require('../utils/constants');
+const { HTTP_CREATED, handleError } = require('../utils/constants');
 
 async function createCard(req, res) {
   try {
