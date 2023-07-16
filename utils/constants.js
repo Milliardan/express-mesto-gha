@@ -20,12 +20,11 @@ function handleError(err, req, res) {
 
   if (err.constructor.name === 'NotFoundError') {
     res.status(NOT_FOUND).send({
-      message: err.message,
+      message: 'Пользователь не найден',
     });
     return;
   }
 
-  console.error(err);
   res.status(INTERNAL_SERVER_ERROR).send({
     message: 'Произошла ошибка на сервере',
   });
