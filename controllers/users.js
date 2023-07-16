@@ -37,15 +37,24 @@ async function getUser(req, res) {
   }
 }
 
+async function updateUserField(userId, updateData) {
+  // eslint-disable-next-line no-useless-catch
+  try {
+    const user = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+      runValidators: true,
+    });
+    return user;
+  } catch (err) {
+    throw err;
+  }
+}
+
 async function updateAvatar(req, res) {
   try {
     const userId = req.user._id;
     const { avatar } = req.body;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { avatar },
-      { new: true },
-    );
+    const user = await updateUserField(userId, { avatar });
     res.send(user);
   } catch (err) {
     handleError(err, req, res);
@@ -56,11 +65,7 @@ async function updateUser(req, res) {
   try {
     const userId = req.user._id;
     const { name, about } = req.body;
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { name, about },
-      { new: true, runValidators: true },
-    );
+    const user = await updateUserField(userId, { name, about });
     res.send(user);
   } catch (err) {
     handleError(err, req, res);
