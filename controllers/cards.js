@@ -31,7 +31,6 @@ async function getCard(req, res) {
   }
 }
 
-
 async function deleteCard(req, res) {
   try {
     const { cardId } = req.params;
