@@ -12,8 +12,6 @@ async function createUser(req, res) {
   }
 }
 
-module.exports = { createUser };
-
 async function getAllUsers(req, res) {
   try {
     const users = await User.find({});

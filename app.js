@@ -17,7 +17,6 @@ mongoose
     console.error(err);
   });
 
-// временное решение авторизации пользователя
 app.use((req, res, next) => {
   req.user = {
     _id: '64b3e17052f9c861c39b0fba',
