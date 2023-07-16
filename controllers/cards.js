@@ -1,83 +1,62 @@
-const Card = require('../models/card');
+const { Card } = require('../models/card');
+const { handleError } = require('../utils/handleError');
 
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
+async function createCard(req, res) {
+  try {
+    const { name, link } = req.body;
+    const ownerId = req.user._id;
+    const card = await Card.create({ name, link, owner: ownerId });
+    res.send(card);
+  } catch (err) {
+    handleError(err, req, res);
+  }
+}
 
-const getAllCards = (req, res) => {
-  Card.find({})
-    .populate('owner')
-    .then((cards) => res.send(cards))
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
-    });
-};
+module.exports = { createCard };
 
-const createCard = (req, res) => {
-  const { _id } = req.user;
-  const { name, link } = req.body;
-  Card.create({ name, link, owner: _id })
-    .then((card) => res.send(card))
-    .catch((err) => {
-      if (!name || !link || err.message) {
-        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
-      }
-    });
-};
+const { Card } = require('../models/card');
+const { handleError } = require('../utils/handleError');
 
-const deleteCard = (req, res) => {
+async function deleteCard(req, res) {
+  try {
+    const { cardId } = req.params;
+
+    const card = await Card.findByIdAndRemove(cardId);
+
+    if (!card) {
+      const error = new Error('Карточка не найдена');
+      error.name = 'NotFoundError';
+      throw error;
+    }
+
+    res.send(card);
+  } catch (err) {
+    handleError(err, req, res);
+  }
+}
+
+module.exports = { deleteCard };
+
+const { Card } = require('../models/card');
+const { handleError } = require('../utils/handleError');
+
+async function getAllCards(req, res) {
+  try {
+    const cards = await Card.find({});
+    res.send(cards);
+  } catch (err) {
+    handleError(err, req, res);
+  }
+}
+
+module.exports = { getAllCards };
+
+const { Card } = require('../models/card');
+
+async function getCard(req, res) {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
-    .then((card) => {
-      if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Переданные данные некорректны' });
-        return;
-      }
-      res.send({ message: 'Карточка удалена' });
-    })
-    .catch(() => {
-      if (!Card[cardId]) {
-        res.status(BAD_REQUEST).send({ message: 'Переданные данные некорректны' });
-      }
-    });
-};
+  const card = await Card.findById(cardId);
+  res.send(card);
+}
 
-const putLike = (req, res) => {
-  const { _id } = req.user;
-  const { cardId } = req.params;
-  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: _id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Переданные данные некорректны' });
-        return;
-      }
-      res.send(card);
-    })
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
-    });
-};
-
-const deleteLike = (req, res) => {
-  const { _id } = req.user;
-  const { cardId } = req.params;
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: _id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Переданные данные некорректны' });
-        return;
-      }
-      res.send(card);
-    })
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла неизвестная ошибка', err: err.message });
-    });
-};
-
-module.exports = {
-  createCard,
-  deleteCard,
-  getAllCards,
-  putLike,
-  deleteLike,
-};
+module.exports = { getCard };
