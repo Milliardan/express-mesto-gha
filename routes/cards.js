@@ -3,6 +3,7 @@ const express = require('express');
 const {
   createCard,
   deleteCard,
+  getCard,
   getAllCards,
   putLike,
   deleteLike,
@@ -12,6 +13,7 @@ const cards = express.Router();
 
 cards.get('/', getAllCards);
 cards.post('/', express.json(), createCard);
+cards.get('/:cardId', getCard);
 cards.delete('/:cardId', deleteCard);
 cards.put('/:cardId/likes', putLike);
 cards.delete('/:cardId/likes', deleteLike);
