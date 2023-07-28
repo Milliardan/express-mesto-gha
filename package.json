@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "express": "^4.16.0",
-    "mongoose": "^7.3.4"
+    "mongoose": "^7.3.4",
+    "validator": "^13.9.0"
   }
 }
