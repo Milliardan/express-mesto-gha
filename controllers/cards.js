@@ -1,66 +1,57 @@
 const { Card } = require('../models/card');
-const { handleError } = require('../utils/handleError');
+const { ValidationError } = require('../../errors');
 
-async function createCard(req, res) {
+async function createCard(req, res, next) {
   try {
     const { name, link } = req.body;
     const ownerId = req.user._id;
     const card = await Card.create({ name, link, owner: ownerId });
-    res.send(card);
+    res.status(201).send(card);
   } catch (err) {
-    handleError(err, req, res);
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      next(new ValidationError(`Неверные данные в ${err.path ?? 'запросе'}`));
+      return;
+    }
+
+    next(err);
   }
 }
 
-async function getAllCards(req, res) {
+async function getAllCards(req, res, next) {
   try {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    handleError(err, req, res);
+    next(err);
   }
 }
 
-async function getCard(req, res) {
-  const { cardId } = req.params;
-  try {
-    const card = await Card.findById(cardId);
-    res.send(card);
-  } catch (err) {
-    handleError(err, req, res);
-  }
-}
-
-async function deleteCard(req, res) {
+async function deleteCard(req, res, next) {
   try {
     const { cardId } = req.params;
 
     const card = await Card.findById(cardId).populate('owner');
 
     if (!card) {
-      const error = new Error('Карточка не найдена');
-      error.name = 'NotFoundError';
-      throw error;
+      throw new NotFoundError('Карточка не найдена');
     }
 
     const ownerId = card.owner.id;
     const userId = req.user._id;
 
     if (ownerId !== userId) {
-      const error = new Error('Удалить можно только свою карточку');
-      error.name = 'UnauthorizedError';
-      throw error;
+      throw new ForbiddenError('Нельзя удалить чужую карточку');
     }
 
     await Card.findByIdAndRemove(cardId);
 
     res.send(card);
   } catch (err) {
-    handleError(err, req, res);
+    next(err);
   }
 }
 
-async function putLike(req, res) {
+async function putLike(req, res, next) {
   try {
     const userId = req.user._id;
     const card = await Card.findByIdAndUpdate(
@@ -70,42 +61,45 @@ async function putLike(req, res) {
     );
 
     if (!card) {
-      const error = new Error('Карточка не найдена');
-      error.name = 'NotFoundError';
-      throw error;
+      throw new NotFoundError('Карточка не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    handleError(err, req, res);
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      next(new ValidationError(`Неверные данные в ${err.path ?? 'запросе'}`));
+      return;
+    }
+    next(err);
   }
 }
 
-async function deleteLike(req, res) {
+async function deleteLike(req, res, next) {
   try {
     const userId = req.user._id;
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: userId } },
+      { $pull: { likes: userId } }, // убрать _id из массива, если он есть
       { new: true },
     );
 
     if (!card) {
-      const error = new Error('Карточка не найдена');
-      error.name = 'NotFoundError';
-      throw error;
+      throw new NotFoundError('Карточка не найдена');
     }
 
     res.send(card);
   } catch (err) {
-    handleError(err, req, res);
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      next(new ValidationError(`Неверные данные в ${err.path ?? 'запросе'}`));
+      return;
+    }
+    next(err);
   }
 }
 
 module.exports = {
   createCard,
   deleteCard,
-  getCard,
   getAllCards,
   putLike,
   deleteLike,
