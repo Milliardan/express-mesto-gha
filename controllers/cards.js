@@ -1,5 +1,5 @@
 const { Card } = require('../models/card');
-const { ValidationError } = require('../../errors');
+const { ValidationError, NotFoundError, ForbiddenError } = require('../errors');
 
 async function createCard(req, res, next) {
   try {
@@ -56,7 +56,7 @@ async function putLike(req, res, next) {
     const userId = req.user._id;
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: userId } }, // добавить _id в массив, если его там нет
+      { $addToSet: { likes: userId } },
       { new: true },
     );
 
@@ -79,7 +79,7 @@ async function deleteLike(req, res, next) {
     const userId = req.user._id;
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: userId } }, // убрать _id из массива, если он есть
+      { $pull: { likes: userId } },
       { new: true },
     );
 
