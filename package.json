@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/Milliardan/express-mesto-gha#readme",
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
     "eslint": "^8.45.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -31,7 +30,6 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
-    "errors": "^0.3.0",
     "express": "^4.16.0",
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.3.4",
