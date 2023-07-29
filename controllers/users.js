@@ -5,8 +5,6 @@ const { ConflictError, ValidationError, NotFoundError, UnauthorizedError } = req
 
 const SALT_LENGTH = 10;
 
-const SALT_LENGTH = 10;
-
 async function createUser(req, res, next) {
   try {
     const {
